@@ -1,10 +1,13 @@
 # Cyberpunk Lore RAG
 
-A side project built during week 2 of a 17-week agentic AI program. Takes The World of Cyberpunk 2077 — a 153-page scanned art/lore book with no selectable text — and turns it into a queryable RAG knowledge base.
+A side project takes The World of Cyberpunk 2077 — a 153-page scanned art/lore book with no selectable text — and turns it into a queryable RAG knowledge base.
 
 The frontend puts GPT-4o and the RAG system side by side so you can see the difference. GPT makes stuff up. RAG stays grounded.
 
 ## The demo
+
+https://github.com/user-attachments/assets/ba016a0b-cd65-4de7-9929-a3683069ebc5
+
 
 Ask both systems: "Why is Santo Domingo called Santo Domingo?"
 
