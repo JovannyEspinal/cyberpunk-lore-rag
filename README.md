@@ -56,26 +56,65 @@ Cyberpunk-themed terminal interface. Dark background, hot pink borders, cyan tex
 ## Architecture
 
 ```
-src/
-  config.py              Shared config + logging
-  prompts.py             System prompts (single source of truth)
-  extraction/
-    extract_text.py      PDF → per-page text via GPT-4o Vision
-    convert_to_markdown.py  Raw text → structured markdown
-  indexing/
-    index.py             Chunk → embed → store in ChromaDB
-  retrieval/
-    retrieve.py          Query ChromaDB with MMR
-    generate.py          RAG vs raw generation
-  api/
-    app.py               FastAPI with streaming endpoints
-
-frontend/
-  index.html             Single-file cyberpunk terminal UI
-
-data/                    (gitignored)
-  extracted/             OCR output + markdown chapters
-  chroma_db/             Vector store
+                         ┌─────────────────────────────┐
+                         │       Offline Pipeline       │
+                         │       (run once)             │
+                         └─────────────────────────────┘
+                                      │
+        ┌─────────────────────────────┼─────────────────────────────┐
+        ▼                             ▼                             ▼
+   ┌──────────┐              ┌──────────────┐              ┌──────────────┐
+   │ PDF      │              │ Markdown     │              │ Indexing     │
+   │ (scanned)│──GPT-4o──→   │ Conversion   │──GPT-4o──→   │              │
+   │ 153 pages│   Vision     │ 6 chapters   │   mini       │ Chunk        │
+   └──────────┘              └──────────────┘              │ Embed        │
+                                                           │ Store        │
+                                                           └──────┬───────┘
+                                                                  │
+                                                                  ▼
+                                                           ┌──────────────┐
+                                                           │  ChromaDB    │
+                                                           │  ~200 chunks │
+                                                           │  + metadata  │
+                                                           └──────┬───────┘
+                                                                  │
+                         ┌─────────────────────────────┐          │
+                         │       Online Pipeline        │          │
+                         │       (per query)            │          │
+                         └─────────────────────────────┘          │
+                                      │                           │
+                               ┌──────┴──────┐                   │
+                               │   FastAPI   │                   │
+                               │   /generate │                   │
+                               └──────┬──────┘                   │
+                          ┌───────────┴───────────┐              │
+                          ▼                       ▼              │
+                   ┌────────────┐          ┌────────────┐        │
+                   │ /raw       │          │ /rag       │        │
+                   │            │          │            │        │
+                   │ Question   │          │ Question   │        │
+                   │     │      │          │     │      │        │
+                   │     ▼      │          │     ▼      │        │
+                   │  GPT-4o   │          │  MMR Search ◄────────┘
+                   │ (training │          │     │       │
+                   │  data)    │          │     ▼       │
+                   │     │      │          │  Top 8     │
+                   │     │      │          │  chunks    │
+                   │     │      │          │     │      │
+                   │     │      │          │     ▼      │
+                   │     │      │          │  GPT-4o   │
+                   │     │      │          │ (grounded)│
+                   │     ▼      │          │     ▼      │
+                   │  Stream   │          │  Stream    │
+                   └─────┬──────┘          └─────┬──────┘
+                         │                       │
+                         └───────────┬───────────┘
+                                     ▼
+                              ┌─────────────┐
+                              │  Frontend   │
+                              │  Side by    │
+                              │  side       │
+                              └─────────────┘
 ```
 
 Endpoints:
