@@ -1,0 +1,24 @@
+extraction:
+  pdf_path: "/Users/delamain/Downloads/The World of Cyberpunk 2077 (Marcin Batylda) (z-library.sk, 1lib.sk, z-lib.sk).pdf"
+  output_dir: "data/extracted"
+  dpi: 150
+  model: "gpt-4o-mini"
+  max_tokens: 2000
+  request_delay: 0.5  # seconds between API calls
+
+indexing:
+  chunk_size: 500
+  chunk_overlap: 100
+  embedding_model: "text-embedding-3-small"
+  chroma_dir: "data/chroma_db"
+  collection_name: "cyberpunk_lore"
+
+retrieval:
+  top_k: 8
+  use_mmr: true
+  use_hybrid: true
+
+api:
+  host: "0.0.0.0"
+  port: 8000
+  chat_model: "gpt-4o-mini"

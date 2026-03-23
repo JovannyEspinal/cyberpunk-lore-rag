@@ -1,0 +1,15 @@
+pymupdf
+openai
+python-dotenv
+pyyaml
+langchain
+langchain-openai
+langchain-community
+langchain-chroma
+chromadb
+llama-index
+llama-index-llms-openai
+llama-index-embeddings-openai
+streamlit
+fastapi
+uvicorn
